@@ -1,0 +1,79 @@
+# Redrob Hackathon — Submission Metadata
+# Technical fields are filled from measured runs. Identity / hosting fields marked
+# `# FILL` must be completed before submission.
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "FILL-team-name"
+
+primary_contact:
+  name: "Yash Aggarwal"
+  email: "yashaggarwal668@gmail.com"
+  phone: "FILL +91-XXXXXXXXXX"
+
+team_members:
+  - name: "Yash Aggarwal"
+    email: "yashaggarwal668@gmail.com"
+    role: "ML Engineer"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "FILL https://github.com/USERNAME/REPO"
+sandbox_link: "FILL https://huggingface.co/spaces/USERNAME/redrob-ranker"
+reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+
+# ============================================================================
+# Compute environment (measured)
+# ============================================================================
+compute:
+  platform: "Local Windows box, 16-core CPU"
+  cpu_cores: 16
+  ram_gb: 16
+  python_version: "3.10.11"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false   # feature build runs inside the single reproduce command (~110s, in-budget)
+  pre_computation_time_minutes: 0
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+ai_tools_used:
+  - "Claude"
+
+ai_usage_summary: |
+  Used Claude (Claude Code) for architecture discussion, code review, and pair
+  implementation throughout. All rubric content was human-reviewed line by line
+  and frozen. No candidate data was fed to any LLM at rank time — ranking is a
+  deterministic, offline, vectorized weighted sum with no network calls.
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  A JD-understanding layer, not keyword matching. A frozen, human-reviewed rubric
+  (rubric.yaml) encodes the role's must-haves, nice-to-haves, disqualifiers, and
+  consistency rules. Two stages: an offline build extracts ~42 raw signals per
+  candidate (structured features + a TF-IDF semantic similarity to a JD reference)
+  into features.parquet; the rank-time scorer applies rubric weights as a
+  vectorized weighted sum (base_fit x behavioral - penalties), takes the top 100,
+  and attaches deterministic, fact-grounded reasoning. The decisive signal is
+  skill-title-career coherence: in this pool keyword stuffers outnumber
+  corroborated candidates ~10:1, so corroborated title-match is weighted far above
+  raw skill tags. Honeypots are caught by high-precision internal-consistency rules
+  (role months > total career; expert proficiency with ~0 months used) applied as a
+  hard floor. Runs on CPU in ~110s end-to-end, no network. Subset NDCG@10 0.9968;
+  top-100 honeypot rate 0%.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true         # eval/check_traps.py — top-100 honeypot rate 0%
+  reproduction_tested: true         # validated in Phases 4/6; byte-identical cached vs from-scratch
