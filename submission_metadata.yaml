@@ -5,12 +5,12 @@
 # ============================================================================
 # Team identity
 # ============================================================================
-team_name: "FILL-team-name"
+team_name: "The Problem Solvers"
 
 primary_contact:
   name: "Yash Aggarwal"
   email: "yashaggarwal668@gmail.com"
-  phone: "FILL +91-XXXXXXXXXX"
+  phone: "+91-9053318341"
 
 team_members:
   - name: "Yash Aggarwal"
@@ -20,8 +20,8 @@ team_members:
 # ============================================================================
 # Code and reproducibility
 # ============================================================================
-github_repo: "FILL https://github.com/USERNAME/REPO"
-sandbox_link: "FILL https://huggingface.co/spaces/USERNAME/redrob-ranker"
+github_repo: "https://github.com/Yash1309-coder/redrobs-hackathon-project-"
+sandbox_link: "FILL https://<app>.streamlit.app  # paste after deploying app.py to Streamlit Cloud"
 reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
 
 # ============================================================================

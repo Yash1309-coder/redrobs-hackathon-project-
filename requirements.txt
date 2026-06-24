@@ -5,3 +5,4 @@ pandas==2.3.3
 scikit-learn==1.7.2
 pyarrow==23.0.1
 PyYAML==6.0.3
+streamlit==1.40.2   # sandbox demo only (app.py); not used at rank time
