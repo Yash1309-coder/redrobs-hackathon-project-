@@ -19,7 +19,7 @@
 | 5. Honeypot / consistency defense | ✅ Done | top-100 honeypot rate 0% (verified, `eval/check_traps.py`) |
 | 6. Reasoning generation | ✅ Done | fact-grounded, 100/100 unique, honest gaps; `src/ranker/reasoning.py` |
 | 7. Tune against eval set | ✅ Done | subset NDCG@10 **0.9968** (ceiling, robust); config locked, no overfit |
-| 8. Repo + deck + sandbox | 🟡 Next | Stages 3-5 readiness |
+| 8. Repo + deck + sandbox | 🟡 In progress | README/reqs/metadata/git ✅; deck.md drafted (PDF pending); sandbox pending platform |
 | 9. Validate & submit | ⬜ Not started | 3 submissions max |
 
 Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked
@@ -118,13 +118,13 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked
 - Config unchanged → submission byte-identical → `eval/check_traps.py` re-run: honeypot **0/100 (PASS)**.
 - Note: `full`-mode NDCG@10 IS knob-sensitive (0.25→0.33) but is **not** an optimization target — it just rewards pushing our 4 labeled tier-4s above unlabeled good picks we haven't judged. Optimizing it = overfitting to the label sample, not the role.
 
-## Phase 8 — Repo + deck + sandbox (Stages 3-5)
-- [ ] Clean README: setup + single reproduce command
-- [ ] `requirements.txt` / pyproject with pinned versions
-- [ ] `submission_metadata.yaml` at repo root
-- [ ] **Real git history** — commit in genuine increments, no single dump
-- [ ] Deck → PDF: approach, rubric, scoring, eval results, sample reasoning
-- [ ] Hosted sandbox (HF Spaces / Streamlit / Replit / Colab / Docker / Binder)
+## Phase 8 — Repo + deck + sandbox (Stages 3-5)  🟡
+- [x] Clean README: setup + single reproduce command — `README.md` (reproduce verified end-to-end, validator PASS)
+- [x] `requirements.txt` with pinned versions — numpy/pandas/scikit-learn/pyarrow/PyYAML on py3.10.11
+- [x] `submission_metadata.yaml` at repo root — technical fields measured; `# FILL` left for team_name/phone/github_repo/sandbox_link
+- [x] **Real git history** — 9 genuine phase-by-phase commits (Phase 0→8), no single dump; 465MB data dir gitignored
+- [~] Deck → PDF — `deck.md` drafted (approach, rubric, scoring, eval, sample reasoning); **PDF conversion pending**
+- [ ] Hosted sandbox — **platform not yet chosen** (HF Spaces / Streamlit / Replit / Colab / Docker / Binder)
 
 ## Phase 9 — Validate & submit
 - [ ] Run `validate_submission.py` — zero errors
