@@ -1,0 +1,301 @@
+# =============================================================================
+# rubric.yaml  —  The "recruiter brain" for the Redrob Senior AI Engineer JD.
+#
+# This is the JD-understanding layer (design.md S3.1). It was DRAFTED by reading
+# the full job_description.docx, then HAND-REVIEWED line by line and GROUNDED in
+# measured values from the real 100k pool (design.md S6.5). It is the single
+# source of truth the rank-time scorer reads. No network at rank time — this file
+# is the frozen, version-controlled artifact we open and defend at Stage 5.
+#
+# Philosophy (straight from the JD's hackathon note):
+#   "The right answer involves reasoning about the gap between what the JD SAYS
+#    and what the JD MEANS." Skill keywords are a TRAP. A Marketing Manager with
+#    every AI keyword is NOT a fit; a candidate who built a recsys at a product
+#    company IS a fit even without the buzzwords. Behavioral availability matters.
+#
+# Scoring shape (see design.md S3.2), all terms trace to profile facts:
+#   final = base_fit * behavioral_availability - penalties
+#   base_fit       = domain_fit + experience_fit + must_have_coverage
+#                    + nice_to_have_bonus + location_fit + product_company_fit
+#   penalties      = incoherence + disqualifiers + inconsistency(honeypot)
+# Weights below are an INITIAL hand-set; Phase 7 tunes them against eval/labels_*.
+# =============================================================================
+
+meta:
+  role: "Senior AI Engineer — Founding Team @ Redrob"
+  source: "job_description.docx (full text)"
+  version: 1
+  notes: >
+    Disqualifiers are SOFT penalties, not hard filters (design decision 2026-06-21):
+    we demote polished-fakes without nuking plain-language Tier-5s. Only internal
+    inconsistency (honeypots) triggers a near-hard demote.
+
+# -----------------------------------------------------------------------------
+# 1. DOMAIN  — what subfield the candidate actually works in.
+#    This is the highest-leverage axis. The JD wants NLP / IR / retrieval /
+#    ranking / recsys / search. It explicitly DEMOTES computer vision, speech,
+#    robotics "without significant NLP/IR exposure".
+#    Detection: title + headline + summary + career_history[].description +
+#    skill names. We weight TITLE/CAREER corroboration far above skill tags
+#    (the 10:1 stuffer ratio is why).
+# -----------------------------------------------------------------------------
+domain:
+  core_terms:            # in-domain — strong positive
+    - retrieval
+    - information retrieval
+    - semantic search
+    - search
+    - ranking
+    - learning to rank
+    - recommendation
+    - recommender
+    - recsys
+    - nlp
+    - natural language processing
+    - embeddings
+    - vector search
+    - hybrid search
+    - relevance
+  core_titles:           # rare, high-signal corroborating titles (measured: <200 each)
+    - machine learning engineer
+    - ml engineer
+    - ai engineer
+    - applied scientist
+    - applied ml engineer
+    - research engineer
+    - data scientist
+    - nlp engineer
+    - recommendation systems engineer
+    - search engineer
+    - relevance engineer
+    - ranking engineer
+  off_domain_terms:      # CV/speech/robotics — demote if these DOMINATE and core is absent
+    - computer vision
+    - image classification
+    - object detection
+    - opencv
+    - speech recognition
+    - asr
+    - tts
+    - text-to-speech
+    - robotics
+    - slam
+    - gans
+    - diffusion models
+  weights:
+    core_title_match: 3.0        # title corroborates the domain — the big lever
+    core_term_in_summary: 1.5    # career/summary describes in-domain work
+    core_skill_present: 0.4      # skill tag only — weak on its own (anti-stuffer)
+    off_domain_dominant_penalty: -2.5  # CV/speech/robotics primary, weak NLP/IR
+
+# -----------------------------------------------------------------------------
+# 2. EXPERIENCE  — JD ideal: 6-8y total, 4-5y applied ML at product companies.
+#    Band 5-9 is "in scope". Below ~4 or above ~12 gets penalized.
+#    Detection: profile.years_of_experience + career_history domain tenure.
+# -----------------------------------------------------------------------------
+experience:
+  ideal_min: 6.0
+  ideal_max: 8.0
+  inscope_min: 5.0
+  inscope_max: 9.0
+  hard_low: 3.0          # below this, strong penalty (too junior, e.g. stuffers at 1.9y)
+  hard_high: 13.0        # well above band — likely manager/architect drift
+  weights:
+    in_ideal: 2.0
+    in_scope: 1.2
+    near_scope: 0.4      # 4-5y or 9-11y
+    out_of_band_penalty: -1.5
+
+# -----------------------------------------------------------------------------
+# 3. MUST-HAVES  — the JD's "things you absolutely need".
+#    Each maps to detectable evidence. Coverage across these is rewarded.
+# -----------------------------------------------------------------------------
+must_haves:
+  - id: embeddings_retrieval_production
+    weight: 1.6
+    detect:
+      summary_terms: [embeddings, retrieval, hybrid, dense, bm25, "vector recall", reranking]
+      skills_any: [embeddings, "sentence transformers", bge, e5, faiss, "vector search", "semantic search"]
+  - id: vector_db_hybrid_search
+    weight: 1.2
+    detect:
+      skills_any: [pinecone, weaviate, qdrant, milvus, opensearch, elasticsearch, faiss, pgvector, haystack]
+  - id: ranking_evaluation_literacy
+    weight: 1.4            # JD: "designing evaluation frameworks ... NDCG/MRR/MAP, offline-to-online"
+    detect:
+      summary_terms: [ndcg, mrr, "mean reciprocal", map, "a/b test", "offline-online", "offline to online", "evaluation harness", recall@, precision@]
+      skills_any: ["learning to rank", "information retrieval"]
+  - id: strong_python_engineering
+    weight: 0.8
+    detect:
+      skills_any: [python, mlops, mlflow, bentoml, docker, kubernetes]
+      signal_min: { github_activity_score: 20 }   # real code signal (>=0 means linked)
+  - id: shipped_at_scale
+    weight: 1.0            # JD ideal: "shipped end-to-end ranking/search/recsys at meaningful scale"
+    detect:
+      summary_terms: [production, "real users", "at scale", "queries per", "50m", "100m", "served", "in prod", deployed]
+
+# -----------------------------------------------------------------------------
+# 4. NICE-TO-HAVES  — "things we'd like but won't reject for". Small bonuses.
+# -----------------------------------------------------------------------------
+nice_to_haves:
+  - id: llm_finetuning
+    weight: 0.3
+    detect: { skills_any: [lora, qlora, peft, "fine-tuning llms", "fine-tuning"] }
+  - id: learning_to_rank_models
+    weight: 0.3
+    detect: { skills_any: [xgboost, lightgbm, "learning to rank"] }
+  - id: hr_tech_marketplace
+    weight: 0.25
+    detect: { industry_any: ["e-commerce", "food delivery", marketplace, hrtech, "hr tech"] }
+  - id: distributed_inference
+    weight: 0.2
+    detect: { skills_any: ["distributed systems", "inference optimization", triton, "ray", spark] }
+  - id: open_source_signal
+    weight: 0.3
+    detect: { signal_min: { github_activity_score: 60 } }
+
+# -----------------------------------------------------------------------------
+# 5. DISQUALIFIERS  — the JD's "things we explicitly do NOT want".
+#    SOFT penalties (negative weight), each with a concrete detection rule.
+#    These are the differentiator: most teams encode only positives.
+# -----------------------------------------------------------------------------
+disqualifiers:
+  - id: incoherence_keyword_stuffer
+    penalty: -4.0          # THE big one. Title/career do not corroborate AI skills.
+    detect:
+      rule: "has_relevant_skills AND NOT domain_corroborated_by_title_or_career"
+      note: >
+        7,789 of 8,545 skill-rich profiles are stuffers (measured). Fingerprint:
+        unrelated current_title (Marketing Manager / Operations Manager / Graphic
+        Designer / Customer Support / Mechanical Engineer), AI skills with short
+        duration_months, boilerplate "recently excited about AI" summary.
+      stuffer_titles: [marketing manager, operations manager, graphic designer, customer support,
+                       sales executive, accountant, content writer, hr manager, civil engineer,
+                       mechanical engineer, business analyst, project manager]
+      boilerplate_summary_terms: ["driving outcomes in my domain", "recently excited about", "ai enthusiast", "generative ai explorer"]
+      recent_skill_months_max: 18   # AI skills all newer than this = veneer
+
+  - id: consulting_firm_only
+    penalty: -2.0
+    detect:
+      rule: "every career_history.company in consulting_firms AND no product-company role ever"
+      consulting_firms: [tcs, "tata consultancy", infosys, wipro, accenture, cognizant,
+                         capgemini, "tech mahindra", hcl, mindtree, ltimindtree, mphasis]
+      note: "JD: prior product-company experience makes a current consulting role OK — so check WHOLE history, not just current."
+
+  - id: title_chaser
+    penalty: -1.5
+    detect:
+      rule: "many roles AND median career_history.duration_months < 18 AND no role >= 30 months"
+      note: "JD: switching companies every ~1.5y to chase Senior/Staff/Principal. Needs 3+ year commitment."
+
+  - id: architect_stopped_coding
+    penalty: -1.5
+    detect:
+      rule: "current_title in {architect, tech lead, engineering manager, director} AND summary lacks hands-on terms"
+      hands_on_terms: [built, shipped, implemented, wrote, coded, deployed, "hands-on"]
+      note: "JD: 'this role writes code'. 18+ months without production code = demote."
+
+  - id: langchain_only_recent_llm
+    penalty: -1.5
+    detect:
+      rule: "AI skills all duration_months < 12 AND no pre-LLM ML history (no classical ML / DS before ~2023)"
+      framework_skills: [langchain, llamaindex, "prompt engineering"]
+      note: "JD: <12mo of LangChain-calling-OpenAI without substantial pre-LLM ML = demote."
+
+  - id: cv_speech_robotics_primary
+    penalty: -2.5
+    detect:
+      rule: "off_domain_terms dominate title+skills AND core_terms largely absent"
+      note: "JD: CV/speech/robotics without significant NLP/IR = re-learning fundamentals."
+
+  - id: closed_source_no_validation
+    penalty: -0.5          # weak detection — minor signal only
+    detect:
+      rule: "very senior AND github_activity_score == -1 AND no certifications AND no OSS signal"
+      note: "JD: 5+ yrs closed-source with no external validation (papers/talks/OSS). Hard to detect; keep small."
+
+# -----------------------------------------------------------------------------
+# 6. LOCATION  — JD: Noida/Pune preferred; Hyderabad/Mumbai/Delhi-NCR/Bangalore
+#    welcome; outside India case-by-case, NO VISA SPONSORSHIP. Relocation helps.
+#    Detection: profile.location / country + redrob_signals.willing_to_relocate.
+# -----------------------------------------------------------------------------
+location:
+  target_cities: [noida, pune, hyderabad, bangalore, bengaluru, delhi, "delhi ncr", gurgaon, gurugram, mumbai, chennai]
+  weights:
+    target_city: 1.0
+    india_other: 0.3
+    non_india_willing_relocate: -0.5
+    non_india_not_relocating: -1.5   # no visa sponsorship — practical non-starter
+
+# -----------------------------------------------------------------------------
+# 7. PRODUCT-COMPANY FIT  — JD ideal: "applied ML at PRODUCT companies, not services".
+#    Industry is a more robust signal than company name (filler/consulting names
+#    dominate the head of the company distribution). See design.md S6.5.
+# -----------------------------------------------------------------------------
+product_company:
+  product_industries: [software, fintech, "food delivery", "e-commerce", ecommerce,
+                       saas, "ai/ml", adtech, edtech, transportation, gaming]
+  services_industries: ["it services", consulting, manufacturing, "paper products", conglomerate]
+  weights:
+    product_now: 0.8
+    product_in_history: 0.5
+    services_only: -0.5
+
+# -----------------------------------------------------------------------------
+# 8. BEHAVIORAL AVAILABILITY  — multiplier in [floor, 1.0] on base_fit.
+#    JD + signals doc: "a perfect-on-paper candidate who hasn't logged in for 6
+#    months with a 5% response rate is, for hiring, not available. Down-weight."
+#    Detection: redrob_signals.*  Tuned in Phase 7 (this is the riskiest knob).
+# -----------------------------------------------------------------------------
+behavioral:
+  multiplier_floor: 0.55     # even a great-on-paper but unavailable candidate keeps some score
+  factors:
+    recruiter_response_rate:   { weight: 0.35, ideal: 0.85, poor: 0.10 }
+    last_active_recency_days:  { weight: 0.25, ideal: 14,   poor: 180 }   # smaller = better
+    open_to_work_flag:         { weight: 0.15, bonus_if_true: true }
+    interview_completion_rate: { weight: 0.15, ideal: 0.85, poor: 0.30 }
+    saved_by_recruiters_30d:   { weight: 0.10, ideal: 30,   poor: 0 }
+  notice_period:               # JD: sub-30 ideal; buy out up to 30; 30+ bar rises
+    great_max_days: 30
+    ok_max_days: 60
+    penalty_over_days: 90
+    weight: 0.15
+
+# -----------------------------------------------------------------------------
+# 9. INTERNAL CONSISTENCY / HONEYPOT DEFENSE  — near-hard demote.
+#    Honeypots are forced to tier 0 in ground truth; >10% in top 100 = DQ.
+#    We do NOT special-case IDs — these rules demote them naturally.
+#    Detection: arithmetic on career_history / skills / dates. (design.md S6.5)
+# -----------------------------------------------------------------------------
+consistency:
+  demote_to_floor: true        # any hard violation forces score to the bottom
+  rules:
+    - id: role_longer_than_career
+      check: "any career_history.duration_months > years_of_experience*12 + 24"
+      note: "Measured real honeypots: 166mo / 171mo / 144mo single roles vs 8-10y total."
+    - id: expert_heavy_low_usage
+      check: "count(skills.proficiency == 'expert') >= 5 AND median(expert skill duration_months) < 12"
+      note: "Only 1,311 'expert' tags exist in 100k — 5+ on one profile is a strong outlier."
+    - id: skill_duration_exceeds_career
+      check: "any skill.duration_months > years_of_experience*12 + 18"
+      soft: true               # softer (5,429 hits) — small penalty, not floor
+    - id: tenure_sum_exceeds_experience
+      check: "sum(career_history.duration_months) > years_of_experience*12 * 1.5"
+      soft: true
+
+# -----------------------------------------------------------------------------
+# 10. TOP-LEVEL COMPOSITION  — how the buckets combine (tuned in Phase 7).
+# -----------------------------------------------------------------------------
+composition:
+  base_fit_terms:
+    - domain
+    - experience
+    - must_haves
+    - nice_to_haves
+    - location
+    - product_company
+  apply_behavioral_as: multiplier      # final = base_fit * behavioral
+  apply_penalties_as: subtract         # then subtract disqualifier + soft-consistency penalties
+  hard_consistency_as: floor           # honeypots floored regardless of base_fit
