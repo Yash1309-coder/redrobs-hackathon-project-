@@ -1,0 +1,13 @@
+# Organizer-provided dataset (465 MB) — graders supply candidates.jsonl at Stage 3
+[PUB] India_runs_data_and_ai_challenge/
+__MACOSX/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Tooling
+.claude/
+
+# artifacts/features.parquet (3.5M) IS committed — it's the reproducibility artifact
