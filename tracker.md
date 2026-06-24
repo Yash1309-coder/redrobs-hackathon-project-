@@ -19,7 +19,7 @@
 | 5. Honeypot / consistency defense | ✅ Done | top-100 honeypot rate 0% (verified, `eval/check_traps.py`) |
 | 6. Reasoning generation | ✅ Done | fact-grounded, 100/100 unique, honest gaps; `src/ranker/reasoning.py` |
 | 7. Tune against eval set | ✅ Done | subset NDCG@10 **0.9968** (ceiling, robust); config locked, no overfit |
-| 8. Repo + deck + sandbox | 🟡 In progress | README/reqs/metadata/git ✅; deck.md drafted (PDF pending); sandbox pending platform |
+| 8. Repo + deck + sandbox | 🟡 In progress | README/reqs/metadata/git/deck.pdf ✅; sandbox app.py ready, awaiting deploy |
 | 9. Validate & submit | ⬜ Not started | 3 submissions max |
 
 Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked
@@ -123,8 +123,8 @@ Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked
 - [x] `requirements.txt` with pinned versions — numpy/pandas/scikit-learn/pyarrow/PyYAML on py3.10.11
 - [x] `submission_metadata.yaml` at repo root — technical fields measured; `# FILL` left for team_name/phone/github_repo/sandbox_link
 - [x] **Real git history** — 9 genuine phase-by-phase commits (Phase 0→8), no single dump; 465MB data dir gitignored
-- [~] Deck → PDF — `deck.md` drafted (approach, rubric, scoring, eval, sample reasoning); **PDF conversion pending**
-- [ ] Hosted sandbox — **platform not yet chosen** (HF Spaces / Streamlit / Replit / Colab / Docker / Binder)
+- [x] Deck → PDF — `deck.md` → `deck.pdf` (Chrome headless print; one slide per page; approach, rubric, scoring, eval, sample reasoning)
+- [~] Hosted sandbox — **Streamlit Cloud** chosen; `app.py` written + smoke-tested headless (100 rows, reasoning OK). **Deploy pending** (push repo → Streamlit Cloud → paste URL into `submission_metadata.yaml`)
 
 ## Phase 9 — Validate & submit
 - [ ] Run `validate_submission.py` — zero errors
