@@ -21,7 +21,7 @@ team_members:
 # Code and reproducibility
 # ============================================================================
 github_repo: "https://github.com/Yash1309-coder/redrobs-hackathon-project-"
-sandbox_link: "FILL https://<app>.streamlit.app  # paste after deploying app.py to Streamlit Cloud"
+sandbox_link: "https://hcmkk7igrvaceqgwcwjnno.streamlit.app/"
 reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
 
 # ============================================================================

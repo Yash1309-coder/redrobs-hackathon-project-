@@ -19,8 +19,8 @@
 | 5. Honeypot / consistency defense | ✅ Done | top-100 honeypot rate 0% (verified, `eval/check_traps.py`) |
 | 6. Reasoning generation | ✅ Done | fact-grounded, 100/100 unique, honest gaps; `src/ranker/reasoning.py` |
 | 7. Tune against eval set | ✅ Done | subset NDCG@10 **0.9968** (ceiling, robust); config locked, no overfit |
-| 8. Repo + deck + sandbox | 🟡 In progress | README/reqs/metadata/git/deck.pdf ✅; sandbox app.py ready, awaiting deploy |
-| 9. Validate & submit | ⬜ Not started | 3 submissions max |
+| 8. Repo + deck + sandbox | 🟡 In progress | README/reqs/metadata/git/deck.pdf ✅; sandbox deployed but **app is private** — must set to public |
+| 9. Validate & submit | 🟡 In progress | validator PASS + honeypot 0% (re-verified); awaiting public sandbox, then portal submit |
 
 Legend: ⬜ todo · 🟡 in progress · ✅ done · ⛔ blocked
 
