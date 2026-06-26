@@ -299,3 +299,7 @@ composition:
   apply_behavioral_as: multiplier      # final = base_fit * behavioral
   apply_penalties_as: subtract         # then subtract disqualifier + soft-consistency penalties
   hard_consistency_as: floor           # honeypots floored regardless of base_fit
+  weights:                             # scalar weights the scorer applies (kept here so tuning never edits code)
+    semantic_sim: 6.0                  # TF-IDF cosine is ~0..0.25; scale it into fit units
+    honeypot_floor_score: -100.0       # sentinel score forcing honeypots to the bottom
+    soft_consistency_penalty: -0.5     # per soft-consistency rule hit (skilldur / tenuresum)

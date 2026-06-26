@@ -18,9 +18,15 @@ from typing import Any, Dict
 import numpy as np
 import pandas as pd
 
-# Semantic layer weight (TF-IDF cosine is ~0..0.25 here; scale it into fit units).
+# Fallback defaults; the real values live in rubric.yaml -> composition.weights
+# (so Phase-7 tuning never edits code). Used only if that section is absent.
 SEMANTIC_WEIGHT = 6.0
 HONEYPOT_FLOOR_SCORE = -100.0
+SOFT_CONSISTENCY_PENALTY = -0.5
+
+
+def _comp_weights(rubric: Dict[str, Any]) -> Dict[str, float]:
+    return rubric.get("composition", {}).get("weights", {}) or {}
 
 
 def _domain_score(df: pd.DataFrame, rubric: Dict[str, Any]) -> pd.Series:
@@ -82,17 +88,20 @@ def _penalties(df: pd.DataFrame, rubric: Dict[str, Any]) -> pd.Series:
         if col in df and rid in dq:
             pen = pen + df[col] * dq[rid]["penalty"]   # penalty is negative
     # soft consistency penalties (not the hard honeypot floor)
+    soft = _comp_weights(rubric).get("soft_consistency_penalty", SOFT_CONSISTENCY_PENALTY)
     cons = {r["id"]: r for r in rubric["consistency"]["rules"]}
     if "cons_skilldur_gt_career" in df and cons.get("skill_duration_exceeds_career", {}).get("soft"):
-        pen = pen + df["cons_skilldur_gt_career"] * -0.5
+        pen = pen + df["cons_skilldur_gt_career"] * soft
     if "cons_tenuresum_gt_exp" in df and cons.get("tenure_sum_exceeds_experience", {}).get("soft"):
-        pen = pen + df["cons_tenuresum_gt_exp"] * -0.5
+        pen = pen + df["cons_tenuresum_gt_exp"] * soft
     return pen
 
 
 def score_dataframe(df: pd.DataFrame, rubric: Dict[str, Any]) -> pd.DataFrame:
     """Add 'base_fit', 'penalties', 'score' columns. Returns the same df."""
-    loc_w = rubric["location"]["weights"]  # location_fit already in weight units
+    cw = _comp_weights(rubric)
+    semantic_weight = cw.get("semantic_sim", SEMANTIC_WEIGHT)
+    honeypot_floor = cw.get("honeypot_floor_score", HONEYPOT_FLOOR_SCORE)
     base = (
         _domain_score(df, rubric)
         + _experience_score(df, rubric)
@@ -100,13 +109,13 @@ def score_dataframe(df: pd.DataFrame, rubric: Dict[str, Any]) -> pd.DataFrame:
         + _nice_to_have_score(df, rubric)
         + df["location_fit"]
         + df["product_fit"]
-        + df["semantic_sim"] * SEMANTIC_WEIGHT
+        + df["semantic_sim"] * semantic_weight
     )
     df["base_fit"] = base
     df["penalties"] = _penalties(df, rubric)
     final = base * df["behavioral_multiplier"] + df["penalties"]
     # hard honeypot floor: forced to the bottom regardless of fit
-    final = final.mask(df["honeypot_hard"] == 1, HONEYPOT_FLOOR_SCORE)
+    final = final.mask(df["honeypot_hard"] == 1, honeypot_floor)
     df["score"] = final
     return df
 
