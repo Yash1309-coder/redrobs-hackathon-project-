@@ -272,17 +272,26 @@ behavioral:
 consistency:
   demote_to_floor: true        # any hard violation forces score to the bottom
   rules:
+    # R1 (hard floor): a single role longer than the whole career + slack is impossible.
     - id: role_longer_than_career
-      check: "any career_history.duration_months > years_of_experience*12 + 24"
+      check: "any career_history.duration_months > years_of_experience*12 + slack_months"
+      slack_months: 24
       note: "Measured real honeypots: 166mo / 171mo / 144mo single roles vs 8-10y total."
-    - id: expert_heavy_low_usage
-      check: "count(skills.proficiency == 'expert') >= 5 AND median(expert skill duration_months) < 12"
-      note: "Only 1,311 'expert' tags exist in 100k — 5+ on one profile is a strong outlier."
+    # R2 (hard floor): 'expert' proficiency claimed on skills used ~0 months. High-precision.
+    - id: expert_proficiency_zero_usage
+      check: "count(skills where proficiency=='expert' AND duration_months <= max_months) >= min_count"
+      max_months: 3
+      min_count: 3
+      note: >
+        The actual R2 floor used by the scorer (not the broad 'expert>=5' rule, which Phase 2
+        rejected for demoting legit seniors). Only 1,311 'expert' tags exist in 100k.
     - id: skill_duration_exceeds_career
-      check: "any skill.duration_months > years_of_experience*12 + 18"
+      check: "any skill.duration_months > years_of_experience*12 + slack_months"
+      slack_months: 18
       soft: true               # softer (5,429 hits) — small penalty, not floor
     - id: tenure_sum_exceeds_experience
-      check: "sum(career_history.duration_months) > years_of_experience*12 * 1.5"
+      check: "sum(career_history.duration_months) > years_of_experience*12 * ratio"
+      ratio: 1.6
       soft: true
 
 # -----------------------------------------------------------------------------

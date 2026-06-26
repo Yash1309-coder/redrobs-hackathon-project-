@@ -305,12 +305,20 @@ def _consistency(c: Dict[str, Any], rubric: Dict[str, Any]) -> Dict[str, int]:
     skills = c.get("skills", []) or []
     career = c.get("career_history", []) or []
 
-    role_gt_career = any((h.get("duration_months") or 0) > yoe * 12 + 24 for h in career)
-    expert_low = [s for s in skills if s.get("proficiency") == "expert" and (s.get("duration_months") or 0) <= 3]
-    expert_zero_usage = len(expert_low) >= 3
-    skilldur_gt_career = any((s.get("duration_months") or 0) > yoe * 12 + 18 for s in skills)
+    # thresholds live in rubric.yaml -> consistency.rules (defaults match the frozen values)
+    rules = {r["id"]: r for r in (rubric.get("consistency", {}).get("rules", []) or [])}
+    role_slack = rules.get("role_longer_than_career", {}).get("slack_months", 24)
+    ez = rules.get("expert_proficiency_zero_usage", {})
+    ez_max_months, ez_min_count = ez.get("max_months", 3), ez.get("min_count", 3)
+    skilldur_slack = rules.get("skill_duration_exceeds_career", {}).get("slack_months", 18)
+    tenure_ratio = rules.get("tenure_sum_exceeds_experience", {}).get("ratio", 1.6)
+
+    role_gt_career = any((h.get("duration_months") or 0) > yoe * 12 + role_slack for h in career)
+    expert_low = [s for s in skills if s.get("proficiency") == "expert" and (s.get("duration_months") or 0) <= ez_max_months]
+    expert_zero_usage = len(expert_low) >= ez_min_count
+    skilldur_gt_career = any((s.get("duration_months") or 0) > yoe * 12 + skilldur_slack for s in skills)
     tenure_sum = sum((h.get("duration_months") or 0) for h in career)
-    tenuresum_gt_exp = yoe > 0 and tenure_sum > yoe * 12 * 1.6
+    tenuresum_gt_exp = yoe > 0 and tenure_sum > yoe * 12 * tenure_ratio
 
     honeypot_hard = role_gt_career or expert_zero_usage  # high-precision floor
     return {
