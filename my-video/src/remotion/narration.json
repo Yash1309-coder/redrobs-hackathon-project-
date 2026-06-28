@@ -1,0 +1,38 @@
+[
+  {
+    "id": "title",
+    "audio": "audio/title.mp3",
+    "image": null,
+    "durationInFrames": 312
+  },
+  {
+    "id": "problem",
+    "audio": "audio/problem.mp3",
+    "image": null,
+    "durationInFrames": 399
+  },
+  {
+    "id": "rubric",
+    "audio": "audio/rubric.mp3",
+    "image": null,
+    "durationInFrames": 325
+  },
+  {
+    "id": "arch",
+    "audio": "audio/arch.mp3",
+    "image": null,
+    "durationInFrames": 358
+  },
+  {
+    "id": "results",
+    "audio": "audio/results.mp3",
+    "image": null,
+    "durationInFrames": 386
+  },
+  {
+    "id": "outro",
+    "audio": "audio/outro.mp3",
+    "image": null,
+    "durationInFrames": 166
+  }
+]

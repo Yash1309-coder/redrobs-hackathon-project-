@@ -1,6 +1,7 @@
 import React from "react";
 import { Composition } from "remotion";
 import { DynamicComp } from "./DynamicComp";
+import { Demo, DEMO_DURATION } from "./Demo";
 
 const defaultCode = `import { AbsoluteFill } from "remotion";
 export const MyAnimation = () => <AbsoluteFill style={{ backgroundColor: "#000" }} />;`;
@@ -20,6 +21,14 @@ export const RemotionRoot: React.FC = () => {
           durationInFrames: props.durationInFrames as number,
           fps: props.fps as number,
         })}
+      />
+      <Composition
+        id="Demo"
+        component={Demo}
+        durationInFrames={DEMO_DURATION}
+        fps={30}
+        width={1920}
+        height={1080}
       />
     </>
   );

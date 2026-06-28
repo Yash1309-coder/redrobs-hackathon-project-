@@ -58,7 +58,7 @@ BODY = {
         ("GitHub (public, genuine phase-by-phase commit history): github.com/Yash1309-coder/redrobs-hackathon-project-", False),
         ("Live sandbox: Streamlit Cloud demo (URL in submission_metadata.yaml) — interactive top-100 with reasoning + defense funnel.", False),
         ("submission.csv (top 100, candidate_id/rank/score/reasoning), deck.pdf, README with the single reproduce command.", False),
-        ("Demo video: [add link]", False),
+        ("Demo video: https://drive.google.com/file/d/1gGUsUBEgGl7-g1fZoNDROQ-2Zv_0X5m7/view?usp=sharing", False),
     ],
 }
 
